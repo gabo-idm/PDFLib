@@ -153,7 +153,14 @@ class PDFLib{
             if($this->gs_command == "gswin32c.exe" || $this->gs_command == "gswin64c.exe"){
                 $this->pdf_path = str_replace('\\', '/', $this->pdf_path);
             }
-            $pages = $this->executeGS('-q -dNODISPLAY --permit-file-read=\''.$this->pdf_path.'\' -c "('.$this->pdf_path.') (r) file runpdfbegin pdfpagecount = quit"',true);
+           
+            if($this->getGSVersion() >= 9.5)
+            {        
+                $pages = $this->executeGS('-q -dNODISPLAY --permit-file-read=\''.$this->pdf_path.'\' -c "('.$this->pdf_path.') (r) file runpdfbegin pdfpagecount = quit"',true);
+            } else {
+                $pages = $this->executeGS('-q -dNODISPLAY -c "('.$this->pdf_path.') (r) file runpdfbegin pdfpagecount = quit"',true);
+            }
+            
             $this->number_of_pages = intval($pages);
         }
         return $this->number_of_pages;
